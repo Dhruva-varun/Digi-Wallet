@@ -1,0 +1,19 @@
+import { axiosInstance } from '.';
+
+export const LoginUser = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post('/users/login', payload);
+    return data;
+  } catch (error) {
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
+
+export const RegisterUser = async (payload) => {
+  try {
+    const { data } = await axiosInstance.post('/users/register', payload);
+    return data;
+  } catch (error) {
+    return error.response?.data || { success: false, message: error.message };
+  }
+};
