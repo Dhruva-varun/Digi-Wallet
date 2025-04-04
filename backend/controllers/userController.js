@@ -34,7 +34,7 @@ exports.login = async (req, res, next) => {
     if (!user) {
       return res.send({
         success: false,
-        message: "user does not exists",
+        message: "Invalid Credentials",
       });
     }
 
@@ -45,7 +45,7 @@ exports.login = async (req, res, next) => {
     if (!validPassword) {
       return res.send({
         success: false,
-        message: "Invalid password",
+        message: "Invalid Credentials",
       });
     }
 

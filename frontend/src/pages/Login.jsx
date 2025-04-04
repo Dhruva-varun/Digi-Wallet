@@ -12,7 +12,7 @@ function Login() {
       if (response.success) {
         message.success(response.message);
         localStorage.setItem("token", response.data);
-        window.location.href = "/";
+        navigate("/");
       } else {
         message.error(response.message);
       }
@@ -23,48 +23,66 @@ function Login() {
 
   return (
     <div className="flex flex-col md:flex-row h-screen">
-      {/* Left Side - Image (Hidden on Mobile) */}
-      <div className="hidden md:flex flex-1 bg-blue-600 items-center justify-center">
+      <div className="hidden md:flex flex-1 items-center justify-center">
         <img
-          src="https://source.unsplash.com/600x600/?banking,security"
-          alt="Login Illustration"
-          className="w-3/4 max-w-md rounded-lg shadow-lg"
+          src="https://pngimg.com/uploads/bank/bank_PNG24.png"
+          alt="Secure Login"
+          className="w-full h-full object-cover rounded-xl shadow-lg"
         />
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="flex-1 flex justify-center items-center bg-gray-50 px-4 md:px-10 py-6">
+      <div className="flex-1 flex justify-center items-center px-4 md:px-10 py-6">
         <div className="w-full max-w-md sm:max-w-sm">
-          <h1 className="text-2xl md:text-3xl font-bold text-blue-600 text-center">Welcome Back</h1>
-          <p className="text-center text-gray-500 mb-6">Sign in to your account</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-600 text-center mb-2">
+            Digi-Wallet
+          </h1>
+          <p className="text-center text-stone-500 mb-6">
+            Login to your account
+          </p>
 
-          <Form layout="vertical" onFinish={onFinish} className="space-y-4">
-            <Form.Item label="Email" name="email">
+          <Form
+            layout="vertical"
+            onFinish={onFinish}
+            initialValues={{ email: "", password: "" }}
+          >
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: "Email is required" },
+                { type: "email", message: "Enter a valid email" },
+              ]}
+            >
               <input
                 type="email"
-                className="w-full p-2 border rounded-md text-sm focus:outline-blue-500"
-                defaultValue=""
+                className="w-full p-2  border rounded-md text-lg focus:outline-stone-500"
               />
             </Form.Item>
 
-            <Form.Item label="Password" name="password">
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[{ required: true, message: "Password is required" }]}
+            >
               <input
                 type="password"
-                className="w-full p-2 border rounded-md text-sm focus:outline-blue-500"
-                defaultValue=""
+                className="w-full p-2 border rounded-md text-lg focus:outline-stone-500"
               />
             </Form.Item>
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-md text-sm hover:bg-blue-700 transition"
+              className="w-full bg-stone-600 text-white py-2 rounded-md text-lg hover:bg-stone-700 transition cursor-pointer"
             >
               Login
             </button>
 
-            <p className="text-center text-gray-600 mt-4 text-sm">
+            <p className="text-center text-stone-600 mt-4 text-md">
               Don't have an account?{" "}
-              <span className="text-blue-500 cursor-pointer hover:underline" onClick={() => navigate("/register")}>
+              <span
+                className="text-violet-600 cursor-pointer hover:underline"
+                onClick={() => navigate("/register")}
+              >
                 Register
               </span>
             </p>
