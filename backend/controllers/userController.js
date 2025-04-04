@@ -69,4 +69,16 @@ exports.login = async (req, res, next) => {
   }
 };
 
-
+exports.getUserInfo = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.body.userId);
+    user.password = "";
+    res.send({
+      message: "user info fetched successfully",
+      data: user,
+      success: true,
+    });
+  } catch (error) {
+    res.send({ message: error.message, success: false });
+  }
+};

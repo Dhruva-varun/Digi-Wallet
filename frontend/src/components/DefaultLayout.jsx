@@ -78,14 +78,14 @@ function DefaultLayout({ children }) {
   const menuToRender = user?.isAdmin ? adminMenu : userMenu;
 
   return (
-    <div className="layout">
-      <div className="sidebar">
-      <div className="menu">
+    <div className="flex p-4 h-screen gap-4 w-screen">
+      <div className="bg-teal-900 p-4 rounded-md h-full flex items-center">
+      <div className="flex flex-col gap-4 w-full">
           {menuToRender.map((item) => {
            const isActive = window.location.pathname === item.path;
             return (
               <div
-                className={`menu-item ${isActive ? "active-menu-item" : ""}`}
+                className={`flex items-center gap-4 text-white p-1.5 cursor-pointer ${isActive ? "active-menu-item" : ""}`}
                 onClick={item.onClick}
                 key={item.path} // add a key for efficient rendering
               >
@@ -96,8 +96,8 @@ function DefaultLayout({ children }) {
           })}
         </div>
       </div>
-      <div className="body">
-        <div className="header flex justify-between item-center">
+      <div className="w-full">
+        <div className="bg-teal-800 p-4 rounded-md w-full flex justify-between item-center">
           <div className="text-white">
             {!collapsed && (
               <i
