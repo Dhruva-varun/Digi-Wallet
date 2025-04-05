@@ -1,88 +1,175 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { Card, Input, Button } from "antd";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Card, message } from "antd";
+import moment from "moment";
+import { GetTransactionsOfUser } from "../api/transactions";
+import { ReloadUser } from "../redux/usersSlice";
+import Loader from "../components/Loader";
+import Deposite from "./Deposite";
+import TransferFund from "./TransferFund";
 
 function Home() {
   const { user } = useSelector((state) => state.users);
   const [activeTab, setActiveTab] = useState("deposit");
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showDepositeModal, setShowDepositeModal] = useState(false);
+  const [showTransferFund, setShowTransferFund] = useState(false);
+  const dispatch = useDispatch();
 
-  // Sample static transactions
-  const transactions = [
-    { date: "Aug 16 2023", type: "withdraw", amount: -15000 },
-    { date: "Aug 15 2023", type: "deposit", amount: 10000 },
-    { date: "Aug 15 2023", type: "deposit", amount: 10000 },
-    { date: "Aug 15 2023", type: "withdraw", amount: -10000 },
-    { date: "Aug 15 2023", type: "withdraw", amount: -30000 },
-    { date: "Aug 11 2023", type: "deposit", amount: 2 },
-  ];
+  const getTransactions = async () => {
+    try {
+      setLoading(true);
+      const response = await GetTransactionsOfUser();
+      if (response.success) {
+        setTransactions(response.data.slice(0, 5));
+        dispatch(ReloadUser(true));
+      } else {
+        message.error(response.message);
+      }
+    } catch (error) {
+      message.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTransactions();
+  }, []);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        
-        <Card className="md:col-span-1">
-          <p className="text-gray-700 text-lg">Welcome back, <em>{user.firstName}</em></p>
-          <p className="text-sm text-gray-600">Balance:</p>
-          <h2 className="text-4xl font-bold mt-2">${user.balance || 0}</h2>
+    <div className="p-6 bg-gray-100 min-h-screen relative">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70">
+          <Loader />
+        </div>
+      )}
+
+      {/* Top Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* User Card */}
+        <Card className="shadow-md rounded-lg">
+          <p className="text-gray-700 text-xl mb-1">
+            Welcome back, <em className="font-semibold">{user.firstName}</em>
+          </p>
+          <p className="text-sm text-gray-500">Available Balance</p>
+          <h2 className="text-4xl font-bold mt-2 text-green-600">
+            ${user.balance || 0}
+          </h2>
         </Card>
 
-        {/* Middle - Deposit/Withdraw Switch */}
-        <Card className="md:col-span-1 p-0 overflow-hidden">
-          <div className="grid grid-cols-2 text-center">
-            <button
-              className={`py-3 text-sm border ${activeTab === "deposit" ? "bg-gray-200 font-semibold" : "bg-white"}`}
-              onClick={() => setActiveTab("deposit")}
-            >
-              DEPOSIT
-            </button>
-            <button
-              className={`py-3 text-sm border ${activeTab === "withdraw" ? "bg-gray-200 font-semibold" : "bg-white"}`}
-              onClick={() => setActiveTab("withdraw")}
-            >
-              transfer
-            </button>
-          </div>
+        {/* Deposit & Transfer Buttons (Vertical) */}
+        <Card className="md:col-span-2 shadow-md rounded-lg p-4 flex flex-col gap-4">
+          <button
+            className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+              activeTab === "deposit"
+                ? "bg-green-100 text-green-700"
+                : "bg-white hover:bg-gray-100 border"
+            }`}
+            onClick={() => {
+              setActiveTab("deposit");
+              setShowDepositeModal(true);
+            }}
+          >
+            💸 DEPOSIT
+          </button>
+
+          <button
+            className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200 ${
+              activeTab === "transfer"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-white hover:bg-gray-100 border"
+            }`}
+            onClick={() => {
+              setActiveTab("transfer");
+              setShowTransferFund(true);
+            }}
+          >
+            🔁 TRANSFER
+          </button>
         </Card>
 
         {/* Date Box */}
-        <Card className="flex flex-col justify-center items-center">
-          <p className="text-sm text-gray-600">Aug</p>
-          <p className="text-3xl font-bold">27</p>
+        <Card className="flex flex-col justify-center items-center shadow-md rounded-lg">
+          <p className="text-sm text-gray-500">{moment().format("MMM")}</p>
+          <p className="text-4xl font-bold text-blue-600">
+            {moment().format("DD")}
+          </p>
         </Card>
       </div>
 
-      {/* Transactions Section */}
-      <Card className="mt-6">
-        <p className="text-lg font-semibold mb-2">Latest transactions</p>
+      {/* Transactions List */}
+      <Card className="mt-10 mb-10 shadow-lg rounded-lg">
+        <p className="text-xl font-semibold text-gray-800 mb-4">
+          🔍 Latest Transactions
+        </p>
 
         {/* Table Header */}
-        <div className="grid grid-cols-3 font-semibold text-gray-600 border-b pb-2">
-          <span>📅 Transaction date</span>
-          <span>↔️ Transaction type</span>
-          <span>💰 Amount</span>
+        <div className="grid grid-cols-3 text-sm font-semibold text-gray-500 border-b pb-2">
+          <span>Date</span>
+          <span>Type</span>
+          <span>Amount</span>
         </div>
 
-        {/* Transactions List */}
-        {transactions.map((txn, idx) => (
-          <div key={idx} className="grid grid-cols-3 text-sm py-2 border-b last:border-none">
-            <span>{txn.date}</span>
-            <span>
-              {txn.type === "deposit" ? (
-                <span className="text-green-600">▲ deposit</span>
-              ) : (
-                <span className="text-red-600">▼ withdraw</span>
-              )}
-            </span>
-            <span className={`font-medium ${txn.amount >= 0 ? "text-green-500" : "text-red-500"}`}>
-              {txn.amount >= 0 ? `+$${txn.amount}` : `-$${Math.abs(txn.amount)}`}
-            </span>
-          </div>
-        ))}
+        {/* Transactions */}
+        {transactions.map((txn, idx) => {
+          const type =
+            txn.sender._id === txn.receiver._id
+              ? "deposit"
+              : txn.sender._id === user._id
+              ? "transfer"
+              : "deposit";
 
-        <div className="text-right mt-3 text-blue-600 cursor-pointer hover:underline">
-          View more
+          const amount = type === "transfer" ? -txn.amount : txn.amount;
+
+          return (
+            <div
+              key={idx}
+              className="grid grid-cols-3 text-sm py-2 border-b last:border-none text-gray-700"
+            >
+              <span>{moment(txn.createdAt).format("MMM DD YYYY")}</span>
+              <span>
+                {type === "deposit" ? (
+                  <span className="text-green-600 font-medium">
+                    ▲ Deposit
+                  </span>
+                ) : (
+                  <span className="text-red-500 font-medium">
+                    ▼ Transfer
+                  </span>
+                )}
+              </span>
+              <span
+                className={`font-semibold ${
+                  amount >= 0 ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {amount >= 0 ? `+$${amount}` : `-$${Math.abs(amount)}`}
+              </span>
+            </div>
+          );
+        })}
+
+        <div className="text-right mt-4">
+          <button className="text-blue-600 text-sm hover:underline">
+            View all transactions
+          </button>
         </div>
       </Card>
+
+      {/* Modals */}
+      <Deposite
+        showDepositeModal={showDepositeModal}
+        setShowDepositeModal={setShowDepositeModal}
+        reloadData={getTransactions}
+      />
+
+      <TransferFund
+        showTransferFund={showTransferFund}
+        setShowTransferFund={setShowTransferFund}
+        reloadData={getTransactions}
+      />
     </div>
   );
 }
