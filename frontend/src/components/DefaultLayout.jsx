@@ -71,12 +71,9 @@ function DefaultLayout({ children }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-stone-100">
-      {/* Navbar */}
       <div className="bg-stone-800 text-white h-16 flex items-center justify-between px-6 shadow-md">
-        {/* Logo */}
         <h1 className="text-2xl font-semibold tracking-wide">Digi Wallet</h1>
 
-        {/* Nav Links */}
         <div className="flex gap-4 items-center">
           {menuToRender.map((item) => {
             const isActive = window.location.pathname === item.path;
@@ -97,8 +94,6 @@ function DefaultLayout({ children }) {
             );
           })}
         </div>
-
-        {/* Logout */}
         <div
           onClick={handleLogout}
           className="cursor-pointer flex items-center gap-2 hover:text-red-400 transition-all"
@@ -108,7 +103,6 @@ function DefaultLayout({ children }) {
         </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 p-6 overflow-auto">{children}</div>
     </div>
   );

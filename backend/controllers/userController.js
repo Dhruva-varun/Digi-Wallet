@@ -49,12 +49,12 @@ exports.login = async (req, res, next) => {
       });
     }
 
-    // if (!user.isVerified) {
-    //   return res.send({
-    //     success: false,
-    //     message: "User is not yet Verified or has been suspended",
-    //   });
-    // }
+    if (!user.isVerified) {
+      return res.send({
+        success: false,
+        message: "User is not yet Verified or has been suspended",
+      });
+    }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.send({
