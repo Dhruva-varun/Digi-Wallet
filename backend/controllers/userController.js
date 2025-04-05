@@ -56,9 +56,7 @@ exports.login = async (req, res, next) => {
     //   });
     // }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
     res.send({
       message: "user logged in successfully",
       data: token,
@@ -78,6 +76,36 @@ exports.getUserInfo = async (req, res, next) => {
       data: user,
       success: true,
     });
+  } catch (error) {
+    res.send({ message: error.message, success: false });
+  }
+};
+
+
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.send({
+      message: "users fetched successfully",
+      data: users,
+      success: true,
+    });
+  } catch (error) {
+    res.send({ message: error.message, success: false });
+  }
+};
+
+exports.UpdateVerifyStatus = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.selectedUser,{
+       isVerified: req.body.isVerified,
+    })
+      res.send({
+        message: "users verified status updated successfully",
+        data: null,
+        success: true,
+      });
+   
   } catch (error) {
     res.send({ message: error.message, success: false });
   }

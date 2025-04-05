@@ -5,6 +5,8 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import Users from './pages/Users';
+import Profile from './pages/Profile';
 
 
 function App() {
@@ -14,6 +16,8 @@ function App() {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+        <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

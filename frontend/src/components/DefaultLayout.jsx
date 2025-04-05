@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -6,14 +6,11 @@ import {
   BankOutlined,
   HomeOutlined,
   LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   UsergroupAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
 function DefaultLayout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
   const { user } = useSelector((state) => state.users);
   const navigate = useNavigate();
 
@@ -35,15 +32,6 @@ function DefaultLayout({ children }) {
       icon: <UserOutlined />,
       onClick: () => navigate("/profile"),
       path: "/profile",
-    },
-    {
-      title: "Logout",
-      icon: <LogoutOutlined />,
-      onClick: () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-      },
-      path: "/logout",
     },
   ];
 
@@ -72,84 +60,56 @@ function DefaultLayout({ children }) {
       onClick: () => navigate("/profile"),
       path: "/profile",
     },
-    {
-      title: "Logout",
-      icon: <LogoutOutlined />,
-      onClick: () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-      },
-      path: "/logout",
-    },
   ];
 
   const menuToRender = user?.isAdmin ? adminMenu : userMenu;
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
-    <div className="flex h-screen w-screen bg-gray-100">
-      <div
-        className={`bg-slate-800 text-white h-full transition-all duration-300 flex flex-col justify-between ${
-          collapsed ? "w-16" : "w-64"
-        }`}
-      >
-        <div>
-          <div className="flex justify-center items-center h-16">
-            {collapsed ? (
-              <MenuUnfoldOutlined
-                onClick={() => setCollapsed(false)}
-                className="text-xl cursor-pointer"
-              />
-            ) : (
-              <MenuFoldOutlined
-                onClick={() => setCollapsed(true)}
-                className="text-xl cursor-pointer"
-              />
-            )}
-          </div>
+    <div className="flex flex-col min-h-screen bg-stone-100">
+      {/* Navbar */}
+      <div className="bg-stone-800 text-white h-16 flex items-center justify-between px-6 shadow-md">
+        {/* Logo */}
+        <h1 className="text-2xl font-semibold tracking-wide">Digi Wallet</h1>
 
-          <div className="flex flex-col gap-2 px-2">
-            {menuToRender.map((item) => {
-              const isActive = window.location.pathname === item.path;
-              return (
-                <div
-                  key={item.path}
-                  onClick={item.onClick}
-                  className={`flex items-center rounded-lg px-3 py-3 cursor-pointer text-base font-medium transition-all duration-200 
-                  ${collapsed ? "justify-center" : "gap-4"}
-                  ${isActive ? "bg-slate-700" : "hover:bg-slate-600"}`}
-                >
-                  <span className="text-xl">{item.icon}</span>
-                  {!collapsed && <span>{item.title}</span>}
-                </div>
-              );
-            })}
-          </div>
+        {/* Nav Links */}
+        <div className="flex gap-4 items-center">
+          {menuToRender.map((item) => {
+            const isActive = window.location.pathname === item.path;
+            return (
+              <div
+                key={item.path}
+                onClick={item.onClick}
+                className={`cursor-pointer flex items-center gap-2 text-base font-medium px-4 py-2 rounded-md transition-all duration-200
+                  ${
+                    isActive
+                      ? "bg-stone-700"
+                      : "hover:bg-stone-600 hover:text-white"
+                  }`}
+              >
+                {item.icon}
+                <span>{item.title}</span>
+              </div>
+            );
+          })}
         </div>
 
+        {/* Logout */}
         <div
-          className={`px-3 py-4 hover:bg-slate-600 cursor-pointer transition-all duration-200 border-t border-slate-700
-          ${collapsed ? "flex justify-center" : "flex items-center gap-3"}`}
-          onClick={() => navigate("/profile")}
+          onClick={handleLogout}
+          className="cursor-pointer flex items-center gap-2 hover:text-red-400 transition-all"
         >
-          <UserOutlined className="text-xl" />
-          {!collapsed && (
-            <div className="truncate">
-              <h1 className="text-md font-semibold">
-                {user?.firstName} {user?.lastName}
-              </h1>
-              <p className="text-xs opacity-70">View Profile</p>
-            </div>
-          )}
+          <LogoutOutlined />
+          <span>Logout</span>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col bg-gray-100">
-        <div className="bg-slate-800 text-white h-16 flex items-center justify-center shadow">
-          <h1 className="text-2xl font-bold">Digi Wallet</h1>
-        </div>
-
-        <div className="flex-1 p-6 overflow-auto">{children}</div>
-      </div>
+      {/* Content */}
+      <div className="flex-1 p-6 overflow-auto">{children}</div>
     </div>
   );
 }
