@@ -7,10 +7,10 @@ import { ReloadUser } from "../redux/usersSlice";
 import Loader from "../components/Loader";
 import Deposite from "./Deposite";
 import TransferFund from "./TransferFund";
+import { Link } from "react-router-dom"; 
 
 function Home() {
   const { user } = useSelector((state) => state.users);
-  const [activeTab, setActiveTab] = useState("deposit");
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showDepositeModal, setShowDepositeModal] = useState(false);
@@ -39,126 +39,114 @@ function Home() {
   }, []);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen relative">
+    <div className="p-4 md:p-6 bg-stone-200 max-h-fit rounded-2xl">
       {loading && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/70">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70">
           <Loader />
         </div>
       )}
 
-      {/* Top Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* User Card */}
-        <Card className="shadow-md rounded-lg">
-          <p className="text-gray-700 text-xl mb-1">
-            Welcome back, <em className="font-semibold">{user.firstName}</em>
-          </p>
-          <p className="text-sm text-gray-500">Available Balance</p>
-          <h2 className="text-4xl font-bold mt-2 text-green-600">
-            ${user.balance || 0}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-8xl  mx-auto mb-6">
+        <Card className="rounded-2xl shadow-md border border-gray-200 p-6 break-words">
+          <p className="text-gray-700 text-xl mb-1">Welcome back,</p>
+          <p className="text-xl font-bold text-stone-800">{user.firstName}</p>
+
+          <p className="text-sm text-gray-600 mt-4">Account No</p>
+          <h2 className="text-xl font-semibold text-zinc-700 break-all">
+            {user._id}
+          </h2>
+
+          <p className="text-sm text-gray-500 mt-4">Available Balance</p>
+          <h2 className="text-2xl font-bold mt-2 text-blue-700">
+            &#8377;{user.balance || 0}
           </h2>
         </Card>
 
-        {/* Deposit & Transfer Buttons (Vertical) */}
-        <Card className="md:col-span-2 shadow-md rounded-lg p-4 flex flex-col gap-4">
+        <Card className="rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col justify-center items-center gap-6">
           <button
-            className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-              activeTab === "deposit"
-                ? "bg-green-100 text-green-700"
-                : "bg-white hover:bg-gray-100 border"
-            }`}
-            onClick={() => {
-              setActiveTab("deposit");
-              setShowDepositeModal(true);
-            }}
+            onClick={() => setShowDepositeModal(true)}
+            className="w-full py-3 px-6 rounded-xl text-lg font-semibold text-zinc-700 bg-stone-300 hover:bg-stone-400 shadow transition-all duration-200"
           >
-            💸 DEPOSIT
+            Deposit
           </button>
 
           <button
-            className={`w-full py-3 rounded-lg text-base font-medium transition-all duration-200 ${
-              activeTab === "transfer"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-white hover:bg-gray-100 border"
-            }`}
-            onClick={() => {
-              setActiveTab("transfer");
-              setShowTransferFund(true);
-            }}
+            onClick={() => setShowTransferFund(true)}
+            className="w-full py-3 px-6 rounded-xl text-lg font-semibold text-white bg-zinc-700 hover:bg-zinc-800 shadow transition-all duration-200 mt-5"
           >
-            🔁 TRANSFER
+            Transfer
           </button>
         </Card>
 
-        {/* Date Box */}
-        <Card className="flex flex-col justify-center items-center shadow-md rounded-lg">
-          <p className="text-sm text-gray-500">{moment().format("MMM")}</p>
-          <p className="text-4xl font-bold text-blue-600">
+        <Card className="rounded-2xl shadow-md border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+          <p className="text-xl text-zinc-700 mb-2">Date</p>
+          <p className="text-3xl font-bold text-blue-600">
             {moment().format("DD")}
+          </p>
+          <p className="text-md text-gray-500">
+            {moment().format("MMMM, YYYY")}
           </p>
         </Card>
       </div>
 
-      {/* Transactions List */}
-      <Card className="mt-10 mb-10 shadow-lg rounded-lg">
-        <p className="text-xl font-semibold text-gray-800 mb-4">
-          🔍 Latest Transactions
-        </p>
+      <div className="max-w-8xl mx-auto px-2 sm:px-4">
+        <Card className="rounded-2xl shadow border border-gray-200 p-6">
+          <p className="text-xl font-semibold text-stone-800 mb-4">
+            You Latest Transactions
+          </p>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-3 text-sm font-semibold text-gray-500 border-b pb-2">
-          <span>Date</span>
-          <span>Type</span>
-          <span>Amount</span>
-        </div>
+          <div className="hidden sm:grid grid-cols-3 text-sm font-semibold text-zinc-500 border-b pb-2">
+            <span>Date</span>
+            <span>Type</span>
+            <span>Amount</span>
+          </div>
 
-        {/* Transactions */}
-        {transactions.map((txn, idx) => {
-          const type =
-            txn.sender._id === txn.receiver._id
-              ? "deposit"
-              : txn.sender._id === user._id
-              ? "transfer"
-              : "deposit";
+          {transactions.map((txn, idx) => {
+            const type =
+              txn.sender._id === txn.receiver._id
+                ? "deposit"
+                : txn.sender._id === user._id
+                ? "transfer"
+                : "deposit";
 
-          const amount = type === "transfer" ? -txn.amount : txn.amount;
+            const amount = type === "transfer" ? -txn.amount : txn.amount;
 
-          return (
-            <div
-              key={idx}
-              className="grid grid-cols-3 text-sm py-2 border-b last:border-none text-gray-700"
-            >
-              <span>{moment(txn.createdAt).format("MMM DD YYYY")}</span>
-              <span>
-                {type === "deposit" ? (
-                  <span className="text-green-600 font-medium">
-                    ▲ Deposit
-                  </span>
-                ) : (
-                  <span className="text-red-500 font-medium">
-                    ▼ Transfer
-                  </span>
-                )}
-              </span>
-              <span
-                className={`font-semibold ${
-                  amount >= 0 ? "text-green-500" : "text-red-500"
-                }`}
+            return (
+              <div
+                key={idx}
+                className="grid grid-cols-1 sm:grid-cols-3 text-sm py-3 border-b last:border-none text-zinc-700 gap-1"
               >
-                {amount >= 0 ? `+$${amount}` : `-$${Math.abs(amount)}`}
-              </span>
-            </div>
-          );
-        })}
+                <span>{moment(txn.createdAt).format("MMM DD, YYYY")}</span>
+                <span>
+                  {type === "deposit" ? (
+                    <span className="text-stone-500 font-medium">Deposit</span>
+                  ) : (
+                    <span className="text-zinc-700 font-medium">Transfer</span>
+                  )}
+                </span>
+                <span
+                  className={`font-semibold ${
+                    amount >= 0 ? "text-green-800" : "text-red-800"
+                  }`}
+                >
+                  {amount >= 0 ? (
+                    <span>+&#8377;{amount}</span>
+                  ) : (
+                    <span>-&#8377;{Math.abs(amount)}</span>
+                  )}
+                </span>
+              </div>
+            );
+          })}
 
-        <div className="text-right mt-4">
-          <button className="text-blue-600 text-sm hover:underline">
-            View all transactions
-          </button>
-        </div>
-      </Card>
+<div className="text-right mt-2">
+  <Link to="/transactions" className="text-blue-600 text-sm hover:underline">
+    View all transactions
+  </Link>
+</div>
+        </Card>
+      </div>
 
-      {/* Modals */}
       <Deposite
         showDepositeModal={showDepositeModal}
         setShowDepositeModal={setShowDepositeModal}
