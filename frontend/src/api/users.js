@@ -29,7 +29,7 @@ export const GetUserInfo = async () => {
 
 export const GetAllUsers = async () => {
   try {
-    const { data } = await axiosInstance.post('/users/get-all-users');
+    const { data } = await axiosInstance.post("/users/get-all-users");
     return data;
   } catch (error) {
     return error.response?.data || { success: false, message: error.message };
@@ -38,11 +38,12 @@ export const GetAllUsers = async () => {
 
 export const UpdateUserVerification = async (payload) => {
   try {
-    const { data } = await axiosInstance.post('/users/update-user-verified-status', payload);
+    const { data } = await axiosInstance.post(
+      "/users/update-user-verified-status",
+      payload
+    );
     return data;
   } catch (error) {
     return error.response?.data || { success: false, message: error.message };
   }
 };
-
-

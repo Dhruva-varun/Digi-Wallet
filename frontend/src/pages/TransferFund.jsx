@@ -72,6 +72,7 @@ function TransferFund({ showTransferFund, setShowTransferFund, reloadData }) {
       open={showTransferFund}
       onCancel={() => setShowTransferFund(false)}
       footer={null}
+      className="max-w-md"
     >
       {loading ? (
         <div className="flex justify-center items-center py-10">
@@ -79,58 +80,53 @@ function TransferFund({ showTransferFund, setShowTransferFund, reloadData }) {
         </div>
       ) : (
         <Form layout="vertical" form={form} onFinish={onFinish}>
-          {/* Account Number & Verify Button */}
-          <div className="flex gap-2 mb-4">
-            <Form.Item
-              label="Account Number"
-              name="receiver"
-              className="flex-1"
-              rules={[
-                {
-                  required: true,
-                  message: "Please enter the account number",
-                },
-              ]}
-            >
-              <input
-                type="text"
-                className="w-full border border-gray-300 rounded px-3 py-2 h-10"
-              />
-            </Form.Item>
+          <div className="mb-4">
+            <label className="block font-medium text-gray-700 mb-1">
+              Account Number
+            </label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Form.Item
+                name="receiver"
+                className="flex-1 m-0"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter the account number",
+                  },
+                ]}
+              >
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-2 h-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring--400"
+                />
+              </Form.Item>
 
-            {/* Ensure button aligns with input using mt-[30px] */}
-            <div className="flex items-center mt-[30px]">
               <button
                 type="button"
                 onClick={verifyAccount}
-                className="bg-blue-600 text-white px-4 h-10 rounded-md hover:bg-blue-700 transition"
+                className="bg-zinc-700 text-white px-4 py-2 h-10 rounded-lg hover:bg-zinc-600 transition"
               >
                 Verify
               </button>
             </div>
           </div>
 
-          {/* Verification Status */}
           {isVerified === "true" && (
-            <div className="bg-green-100 text-green-700 px-3 py-2 rounded mb-3 text-sm">
-              ✅ Account Verified
+            <div className="bg-green-100 text-green-800 px-3 py-2 rounded mb-3 text-sm">
+              Account Verified
             </div>
           )}
           {isVerified === "false" && (
-            <div className="bg-red-100 text-red-700 px-3 py-2 rounded mb-3 text-sm">
-              ❌ Invalid Account Number
+            <div className="bg-red-100 text-red-800 px-3 py-2 rounded mb-3 text-sm">
+              Invalid Account Number
             </div>
           )}
 
-          {/* Amount */}
           <Form.Item
             label="Amount"
             name="amount"
             rules={[
-              {
-                required: true,
-                message: "Please input the amount",
-              },
+              { required: true, message: "Please input the amount" },
               {
                 validator(_, value) {
                   if (!value || parseFloat(value) <= user.balance) {
@@ -143,31 +139,30 @@ function TransferFund({ showTransferFund, setShowTransferFund, reloadData }) {
           >
             <input
               type="number"
-              className="w-full border border-gray-300 rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2"
             />
           </Form.Item>
 
-          {/* Reference */}
           <Form.Item label="Reference" name="reference">
             <textarea
-              className="w-full border border-gray-300 rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2"
               rows={3}
             />
           </Form.Item>
 
-          {/* Action Buttons */}
           <div className="flex justify-end gap-3 mt-4">
             <button
               type="button"
               onClick={() => setShowTransferFund(false)}
-              className="border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition"
+              className="border border-zinc-600 text-zinc-600 px-4 py-2 rounded-lg hover:bg-zinc-200 transition"
             >
               Cancel
             </button>
+
             {isVerified === "true" && (
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                className="bg-stone-600 text-white px-4 py-2 rounded-lg hover:bg-stone-700 transition"
               >
                 Transfer
               </button>

@@ -7,7 +7,7 @@ import { ReloadUser } from "../redux/usersSlice";
 import Loader from "../components/Loader";
 import Deposite from "./Deposite";
 import TransferFund from "./TransferFund";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 
 function Home() {
   const { user } = useSelector((state) => state.users);
@@ -139,11 +139,14 @@ function Home() {
             );
           })}
 
-<div className="text-right mt-2">
-  <Link to="/transactions" className="text-blue-600 text-sm hover:underline">
-    View all transactions
-  </Link>
-</div>
+          <div className="text-right mt-2">
+            <Link
+              to="/transactions"
+              className="text-blue-600 text-sm hover:underline"
+            >
+              View all transactions
+            </Link>
+          </div>
         </Card>
       </div>
 

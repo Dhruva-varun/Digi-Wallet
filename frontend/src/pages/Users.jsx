@@ -67,7 +67,15 @@ function Users() {
     {
       title: "Verified",
       dataIndex: "isVerified",
-      render: (text) => (text ? "Yes" : "No"),
+      render: (text) => (
+        <span
+          className={`px-2 py-1 rounded-full text-sm font-medium ${
+            text ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
+          }`}
+        >
+          {text ? "Yes" : "No"}
+        </span>
+      ),
     },
     {
       title: "Actions",
@@ -104,70 +112,81 @@ function Users() {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
-      <PageTitle title="Users" />
-      {loading ? (
-        <Loader />
-      ) : (
-        <div className="bg-white rounded-lg shadow p-4 mt-4">
-          <Table
-            dataSource={users}
-            columns={columns}
-            rowKey="_id"
-            pagination={{ pageSize: 6 }}
-            className="rounded"
-            onRow={(record) => ({
-              onClick: () => handleRowClick(record),
-            })}
-          />
+    <div className="p-4 md:p-6 bg-stone-200 max-h-fit rounded-2xl min-h-fit">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70">
+          <Loader />
         </div>
       )}
 
+      <PageTitle title="Users" />
+
+      <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 sm:p-6 mt-6 overflow-x-auto">
+        <Table
+          dataSource={users}
+          columns={columns}
+          rowKey="_id"
+          pagination={{ pageSize: 6 }}
+          className="min-w-[600px]"
+          onRow={(record) => ({
+            onClick: () => handleRowClick(record),
+          })}
+        />
+      </div>
+
       <Modal
-        title="User Information"
+        title={<h2 className="text-xl font-semibold">User Details</h2>}
         open={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
-        width={700}
+        width={750}
+        bodyStyle={{ padding: "24px" }}
+        centered
       >
         {selectedUser && (
-          <div className="flex flex-col gap-4 text-gray-800 text-base px-4 py-2">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="text-gray-800 text-base space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-4">
               <div>
-                <p className="font-semibold">First Name:</p>
+                <p className="font-semibold text-gray-600">First Name</p>
                 <p>{selectedUser.firstName}</p>
               </div>
               <div>
-                <p className="font-semibold">Last Name:</p>
+                <p className="font-semibold text-gray-600">Last Name</p>
                 <p>{selectedUser.lastName}</p>
               </div>
               <div>
-                <p className="font-semibold">Email:</p>
+                <p className="font-semibold text-gray-600">Email</p>
                 <p>{selectedUser.email}</p>
               </div>
               <div>
-                <p className="font-semibold">Phone:</p>
+                <p className="font-semibold text-gray-600">Phone</p>
                 <p>{selectedUser.phoneNumber}</p>
               </div>
               <div>
-                <p className="font-semibold">Balance:</p>
-                <p>$ {selectedUser.balance || 0}</p>
+                <p className="font-semibold text-gray-600">Balance</p>
+                <p>&#8377; {selectedUser.balance || 0}</p>
               </div>
               <div>
-                <p className="font-semibold">Account Number:</p>
+                <p className="font-semibold text-gray-600">Account Number</p>
                 <p>{selectedUser._id}</p>
               </div>
               <div>
-                <p className="font-semibold">ID Type:</p>
+                <p className="font-semibold text-gray-600">ID Type</p>
                 <p>{selectedUser.idType}</p>
               </div>
               <div>
-                <p className="font-semibold">ID Number:</p>
+                <p className="font-semibold text-gray-600">ID Number</p>
                 <p>{selectedUser.idNumber}</p>
               </div>
               <div>
-                <p className="font-semibold">Verified:</p>
-                <p>{selectedUser.isVerified ? "Yes" : "No"}</p>
+                <p className="font-semibold text-gray-600">Verified</p>
+                <p>
+                  {selectedUser.isVerified ? (
+                    <span className="text-green-600 font-medium">Yes</span>
+                  ) : (
+                    <span className="text-red-500 font-medium">No</span>
+                  )}
+                </p>
               </div>
             </div>
           </div>

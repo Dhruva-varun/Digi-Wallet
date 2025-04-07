@@ -81,7 +81,6 @@ exports.getUserInfo = async (req, res, next) => {
   }
 };
 
-
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await User.find();
@@ -97,15 +96,14 @@ exports.getAllUsers = async (req, res, next) => {
 
 exports.UpdateVerifyStatus = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.body.selectedUser,{
-       isVerified: req.body.isVerified,
-    })
-      res.send({
-        message: "users verified status updated successfully",
-        data: null,
-        success: true,
-      });
-   
+    await User.findByIdAndUpdate(req.body.selectedUser, {
+      isVerified: req.body.isVerified,
+    });
+    res.send({
+      message: "users verified status updated successfully",
+      data: null,
+      success: true,
+    });
   } catch (error) {
     res.send({ message: error.message, success: false });
   }

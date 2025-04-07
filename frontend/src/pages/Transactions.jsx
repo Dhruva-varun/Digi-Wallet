@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import PageTitle from '../components/PageTitle';
-import { Table, message } from 'antd';
-import TransferFund from './TransferFund';
-import { GetTransactionsOfUser } from '../api/transactions';
-import moment from 'moment';
-import { useSelector } from 'react-redux';
-import Deposite from './Deposite';
-import Loader from '../components/Loader'; // assuming this exists
+import React, { useEffect, useState } from "react";
+import PageTitle from "../components/PageTitle";
+import { Table, message } from "antd";
+import TransferFund from "./TransferFund";
+import { GetTransactionsOfUser } from "../api/transactions";
+import moment from "moment";
+import { useSelector } from "react-redux";
+import Deposite from "./Deposite";
+import Loader from "../components/Loader";
 
 function Transactions() {
   const [showTransferFund, setShowTransferFund] = useState(false);
@@ -17,32 +17,53 @@ function Transactions() {
 
   const columns = [
     {
-      title: 'Date',
-      dataIndex: 'date',
-      render: (text, record) => moment(record.createdAt).format('DD-MM-YYYY hh:mm:ss A'),
+      title: "Date",
+      dataIndex: "date",
+      render: (text, record) =>
+        moment(record.createdAt).format("DD-MM-YYYY hh:mm:ss A"),
     },
     {
-      title: 'Transaction ID',
-      dataIndex: '_id',
+      title: "Transaction ID",
+      dataIndex: "_id",
     },
     {
-      title: 'Amount',
-      dataIndex: 'amount',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
+      title: "Amount",
+      dataIndex: "amount",
       render: (text, record) => {
-        if (record.sender._id === record.receiver._id) return 'Deposit';
-        if (record.sender._id === user._id) return 'Debit';
-        return 'Credit';
+        const type =
+          record.sender._id === record.receiver._id
+            ? "deposit"
+            : record.sender._id === user._id
+            ? "transfer"
+            : "deposit";
+        const amount = type === "transfer" ? -record.amount : record.amount;
+
+        return (
+          <span
+            className={`font-semibold ${
+              amount >= 0 ? "text-green-700" : "text-red-700"
+            }`}
+          >
+            {amount >= 0 ? `+₹${amount}` : `-₹${Math.abs(amount)}`}
+          </span>
+        );
       },
     },
     {
-      title: 'Reference Account',
-      dataIndex: '',
+      title: "Type",
+      dataIndex: "type",
       render: (text, record) => {
-        const reference = record.sender._id === user._id ? record.receiver : record.sender;
+        if (record.sender._id === record.receiver._id) return "Deposit";
+        if (record.sender._id === user._id) return "Debit";
+        return "Credit";
+      },
+    },
+    {
+      title: "Reference Account",
+      dataIndex: "",
+      render: (text, record) => {
+        const reference =
+          record.sender._id === user._id ? record.receiver : record.sender;
         return (
           <p className="text-sm text-gray-700">
             {reference.firstName} {reference.lastName}
@@ -51,12 +72,25 @@ function Transactions() {
       },
     },
     {
-      title: 'Reference',
-      dataIndex: 'reference',
+      title: "Reference",
+      dataIndex: "reference",
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
+      title: "Status",
+      dataIndex: "status",
+      render: (status) => (
+        <span
+          className={`px-2 py-1 text-xs rounded-full ${
+            status === "success"
+              ? "bg-green-100 text-green-700"
+              : status === "pending"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
+          {status}
+        </span>
+      ),
     },
   ];
 
@@ -82,19 +116,24 @@ function Transactions() {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-gray-50 to-gray-200">
-      {/* Page Title and Action Buttons */}
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-4 md:p-6 bg-stone-200 max-h-fit rounded-2xl">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70">
+          <Loader />
+        </div>
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <PageTitle title="Transactions" />
         <div className="flex gap-3">
           <button
-            className="border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition"
+            className="px-4 py-2 rounded-lg bg-stone-300 hover:bg-stone-400 text-zinc-700 font-medium transition"
             onClick={() => setShowDepositeModal(true)}
           >
             Deposit
           </button>
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+            className="px-4 py-2 rounded-lg bg-zinc-700 hover:bg-zinc-800 text-white font-medium transition"
             onClick={() => setShowTransferFund(true)}
           >
             Transfer
@@ -102,23 +141,16 @@ function Transactions() {
         </div>
       </div>
 
-      {/* Transactions Table */}
-      <div className="bg-white rounded-lg shadow p-4">
-        {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <Loader />
-          </div>
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={data}
-            rowKey="_id"
-            pagination={{ pageSize: 6 }}
-          />
-        )}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4">
+        <Table
+          columns={columns}
+          dataSource={data}
+          rowKey="_id"
+          pagination={{ pageSize: 6 }}
+          scroll={{ x: "100%" }}
+        />
       </div>
 
-      {/* Modals */}
       {showTransferFund && (
         <TransferFund
           showTransferFund={showTransferFund}

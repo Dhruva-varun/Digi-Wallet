@@ -46,20 +46,23 @@ function Deposite({ showDepositeModal, setShowDepositeModal, reloadData }) {
 
   return (
     <Modal
-      title="Deposit Funds"
+      title={
+        <h2 className="text-2xl font-semibold text-gray-800">Deposit Funds</h2>
+      }
       open={showDepositeModal}
       onCancel={handleCancel}
       footer={null}
+      centered
+      className="rounded-xl"
     >
-      {(loading || stripeLoading) ? (
+      {loading || stripeLoading ? (
         <div className="flex justify-center items-center py-10">
           <Loader />
         </div>
       ) : (
         <Form layout="vertical" form={form}>
-          {/* Amount Input */}
           <Form.Item
-            label="Amount"
+            label={<span className="text-gray-700 font-medium">Amount</span>}
             name="amount"
             rules={[
               { required: true, message: "Please input the amount" },
@@ -74,16 +77,15 @@ function Deposite({ showDepositeModal, setShowDepositeModal, reloadData }) {
             <input
               type="number"
               placeholder="Enter amount in USD"
-              className="w-full border border-gray-300 rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition"
             />
           </Form.Item>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="flex justify-end gap-4 mt-6">
             <button
               type="button"
               onClick={handleCancel}
-              className="border border-blue-600 text-blue-600 px-4 py-2 rounded-md hover:bg-blue-50 transition"
+              className="px-4 py-2 border border-stone-700 text-stone-700 rounded-md hover:bg-zinc-200 transition"
               disabled={stripeLoading}
             >
               Cancel
@@ -98,7 +100,11 @@ function Deposite({ showDepositeModal, setShowDepositeModal, reloadData }) {
             >
               <button
                 type="button"
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                className={`px-4 py-2 rounded-md text-white transition ${
+                  stripeLoading
+                    ? "bg-zinc-400"
+                    : "bg-zinc-600 hover:bg-zinc-700"
+                }`}
                 onClick={() => setStripeLoading(true)}
                 disabled={stripeLoading}
               >
