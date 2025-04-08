@@ -46,19 +46,17 @@ function Home() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-8xl  mx-auto mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-8xl mx-auto mb-6">
         <Card className="rounded-2xl shadow-md border border-gray-200 p-6 break-words">
           <p className="text-gray-700 text-xl mb-1">Welcome back,</p>
           <p className="text-xl font-bold text-stone-800">{user.firstName}</p>
-
           <p className="text-sm text-gray-600 mt-4">Account No</p>
           <h2 className="text-xl font-semibold text-zinc-700 break-all">
             {user._id}
           </h2>
-
           <p className="text-sm text-gray-500 mt-4">Available Balance</p>
           <h2 className="text-2xl font-bold mt-2 text-blue-700">
-            &#8377;{user.balance || 0}
+            ₹{user.balance || 0}
           </h2>
         </Card>
 
@@ -92,7 +90,7 @@ function Home() {
       <div className="max-w-8xl mx-auto px-2 sm:px-4">
         <Card className="rounded-2xl shadow border border-gray-200 p-6">
           <p className="text-xl font-semibold text-stone-800 mb-4">
-            You Latest Transactions
+            Your Latest Transactions
           </p>
 
           <div className="hidden sm:grid grid-cols-3 text-sm font-semibold text-zinc-500 border-b pb-2">
@@ -102,14 +100,12 @@ function Home() {
           </div>
 
           {transactions.map((txn, idx) => {
-            const type =
-              txn.sender._id === txn.receiver._id
-                ? "deposit"
-                : txn.sender._id === user._id
-                ? "transfer"
-                : "deposit";
+            let type = "Deposit";
+            if (txn.sender._id !== txn.receiver._id) {
+              type = txn.sender._id === user._id ? "Debit" : "Credit";
+            }
 
-            const amount = type === "transfer" ? -txn.amount : txn.amount;
+            const amount = type === "Debit" ? -txn.amount : txn.amount;
 
             return (
               <div
@@ -117,11 +113,15 @@ function Home() {
                 className="grid grid-cols-1 sm:grid-cols-3 text-sm py-3 border-b last:border-none text-zinc-700 gap-1"
               >
                 <span>{moment(txn.createdAt).format("MMM DD, YYYY")}</span>
-                <span>
-                  {type === "deposit" ? (
-                    <span className="text-stone-500 font-medium">Deposit</span>
-                  ) : (
-                    <span className="text-zinc-700 font-medium">Transfer</span>
+                <span className="font-medium">
+                  {type === "Deposit" && (
+                    <span className="text-stone-500">Deposit</span>
+                  )}
+                  {type === "Debit" && (
+                    <span className="text-red-600">Debit</span>
+                  )}
+                  {type === "Credit" && (
+                    <span className="text-green-600">Credit</span>
                   )}
                 </span>
                 <span
@@ -129,11 +129,7 @@ function Home() {
                     amount >= 0 ? "text-green-800" : "text-red-800"
                   }`}
                 >
-                  {amount >= 0 ? (
-                    <span>+&#8377;{amount}</span>
-                  ) : (
-                    <span>-&#8377;{Math.abs(amount)}</span>
-                  )}
+                  {amount >= 0 ? `+₹${amount}` : `-₹${Math.abs(amount)}`}
                 </span>
               </div>
             );
@@ -155,7 +151,6 @@ function Home() {
         setShowDepositeModal={setShowDepositeModal}
         reloadData={getTransactions}
       />
-
       <TransferFund
         showTransferFund={showTransferFund}
         setShowTransferFund={setShowTransferFund}

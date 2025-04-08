@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, message } from "antd";
 import { RegisterUser } from "../api/users";
+import Loader from "../components/Loader";
 
 function Register() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
     if (values.password !== values.confirmPassword) {
@@ -12,7 +14,10 @@ function Register() {
     }
 
     try {
+      setLoading(true);
       const response = await RegisterUser(values);
+      setLoading(false);
+
       if (response.success) {
         message.success(response.message);
         navigate("/login");
@@ -20,6 +25,7 @@ function Register() {
         message.error(response.message);
       }
     } catch (error) {
+      setLoading(false);
       message.error(error.message);
     }
   };
@@ -41,136 +47,142 @@ function Register() {
           </h1>
           <p className="text-center text-stone-500 mb-4">Create your account</p>
 
-          <Form layout="vertical" onFinish={onFinish}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {loading ? (
+            <Loader fullscreen={false} />
+          ) : (
+            <Form layout="vertical" onFinish={onFinish}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Form.Item
+                  label="First Name"
+                  name="firstName"
+                  rules={[
+                    { required: true, message: "First name is required" },
+                  ]}
+                >
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Last Name"
+                  name="lastName"
+                  rules={[{ required: true, message: "Last name is required" }]}
+                >
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Email is required" },
+                    { type: "email", message: "Enter a valid email" },
+                  ]}
+                >
+                  <input
+                    type="email"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Mobile"
+                  name="phoneNumber"
+                  rules={[
+                    { required: true, message: "Phone number is required" },
+                  ]}
+                >
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Identification Type"
+                  name="idType"
+                  rules={[{ required: true, message: "Select ID type" }]}
+                >
+                  <select className="w-full p-2 border rounded-md text-sm">
+                    <option value="">Select</option>
+                    <option value="NATIONAL ID">National ID</option>
+                    <option value="PASSPORT">Passport</option>
+                    <option value="DRIVING LICENSE">Driving License</option>
+                  </select>
+                </Form.Item>
+
+                <Form.Item
+                  label="Identification Number"
+                  name="idNumber"
+                  rules={[{ required: true, message: "ID number is required" }]}
+                >
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+              </div>
+
               <Form.Item
-                label="First Name"
-                name="firstName"
-                rules={[{ required: true, message: "First name is required" }]}
+                label="Address"
+                name="address"
+                rules={[{ required: true, message: "Address is required" }]}
               >
-                <input
-                  type="text"
+                <textarea
                   className="w-full p-2 border rounded-md text-sm"
+                  rows="3"
                 />
               </Form.Item>
 
-              <Form.Item
-                label="Last Name"
-                name="lastName"
-                rules={[{ required: true, message: "Last name is required" }]}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[{ required: true, message: "Password is required" }]}
+                >
+                  <input
+                    type="password"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  rules={[
+                    { required: true, message: "Please confirm your password" },
+                  ]}
+                >
+                  <input
+                    type="password"
+                    className="w-full p-2 border rounded-md text-sm"
+                  />
+                </Form.Item>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-stone-600 text-white py-2 rounded-md text-sm hover:bg-stone-700 transition cursor-pointer"
               >
-                <input
-                  type="text"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
+                Register
+              </button>
 
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Email is required" },
-                  { type: "email", message: "Enter a valid email" },
-                ]}
-              >
-                <input
-                  type="email"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Mobile"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Phone number is required" },
-                ]}
-              >
-                <input
-                  type="text"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Identification Type"
-                name="idType"
-                rules={[{ required: true, message: "Select ID type" }]}
-              >
-                <select className="w-full p-2 border rounded-md text-sm">
-                  <option value="">Select</option>
-                  <option value="NATIONAL ID">National ID</option>
-                  <option value="PASSPORT">Passport</option>
-                  <option value="DRIVING LICENSE">Driving License</option>
-                </select>
-              </Form.Item>
-
-              <Form.Item
-                label="Identification Number"
-                name="idNumber"
-                rules={[{ required: true, message: "ID number is required" }]}
-              >
-                <input
-                  type="text"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
-            </div>
-
-            <Form.Item
-              label="Address"
-              name="address"
-              rules={[{ required: true, message: "Address is required" }]}
-            >
-              <textarea
-                className="w-full p-2 border rounded-md text-sm"
-                rows="3"
-              />
-            </Form.Item>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[{ required: true, message: "Password is required" }]}
-              >
-                <input
-                  type="password"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
-
-              <Form.Item
-                label="Confirm Password"
-                name="confirmPassword"
-                rules={[
-                  { required: true, message: "Please confirm your password" },
-                ]}
-              >
-                <input
-                  type="password"
-                  className="w-full p-2 border rounded-md text-sm"
-                />
-              </Form.Item>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-stone-600 text-white py-2 rounded-md text-sm hover:bg-stone-700 transition cursor-pointer"
-            >
-              Register
-            </button>
-
-            <p className="text-center text-stone-600 mt-4 text-md">
-              Already have an account?{" "}
-              <span
-                className="text-violet-600 cursor-pointer hover:underline"
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </span>
-            </p>
-          </Form>
+              <p className="text-center text-stone-600 mt-4 text-md">
+                Already have an account?{" "}
+                <span
+                  className="text-violet-600 cursor-pointer hover:underline"
+                  onClick={() => navigate("/login")}
+                >
+                  Login
+                </span>
+              </p>
+            </Form>
+          )}
         </div>
       </div>
     </div>

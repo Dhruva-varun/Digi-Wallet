@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, message } from "antd";
 import { LoginUser } from "../api/users";
+import Loader from "../components/Loader";
 
 function Login() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
+    setLoading(true);
     try {
       const response = await LoginUser(values);
       if (response.success) {
@@ -18,6 +21,8 @@ function Login() {
       }
     } catch (error) {
       message.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,53 +45,57 @@ function Login() {
             Login to your account
           </p>
 
-          <Form
-            layout="vertical"
-            onFinish={onFinish}
-            initialValues={{ email: "", password: "" }}
-          >
-            <Form.Item
-              label="Email"
-              name="email"
-              rules={[
-                { required: true, message: "Email is required" },
-                { type: "email", message: "Enter a valid email" },
-              ]}
+          {loading ? (
+            <Loader fullscreen={false} />
+          ) : (
+            <Form
+              layout="vertical"
+              onFinish={onFinish}
+              initialValues={{ email: "", password: "" }}
             >
-              <input
-                type="email"
-                className="w-full p-2  border rounded-md text-lg focus:outline-stone-500"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Password"
-              name="password"
-              rules={[{ required: true, message: "Password is required" }]}
-            >
-              <input
-                type="password"
-                className="w-full p-2 border rounded-md text-lg focus:outline-stone-500"
-              />
-            </Form.Item>
-
-            <button
-              type="submit"
-              className="w-full bg-stone-600 text-white py-2 rounded-md text-lg hover:bg-stone-700 transition cursor-pointer"
-            >
-              Login
-            </button>
-
-            <p className="text-center text-stone-600 mt-4 text-md">
-              Don't have an account?{" "}
-              <span
-                className="text-violet-600 cursor-pointer hover:underline"
-                onClick={() => navigate("/register")}
+              <Form.Item
+                label="Email"
+                name="email"
+                rules={[
+                  { required: true, message: "Email is required" },
+                  { type: "email", message: "Enter a valid email" },
+                ]}
               >
-                Register
-              </span>
-            </p>
-          </Form>
+                <input
+                  type="email"
+                  className="w-full p-2 border rounded-md text-lg focus:outline-stone-500"
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: "Password is required" }]}
+              >
+                <input
+                  type="password"
+                  className="w-full p-2 border rounded-md text-lg focus:outline-stone-500"
+                />
+              </Form.Item>
+
+              <button
+                type="submit"
+                className="w-full bg-stone-600 text-white py-2 rounded-md text-lg hover:bg-stone-700 transition cursor-pointer"
+              >
+                Login
+              </button>
+
+              <p className="text-center text-stone-600 mt-4 text-md">
+                Don't have an account?{" "}
+                <span
+                  className="text-violet-600 cursor-pointer hover:underline"
+                  onClick={() => navigate("/register")}
+                >
+                  Register
+                </span>
+              </p>
+            </Form>
+          )}
         </div>
       </div>
     </div>
